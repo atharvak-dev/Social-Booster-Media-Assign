@@ -1,0 +1,30 @@
+# General
+.DS_Store
+.vscode/
+*.log
+
+# Python / Django
+backend/__pycache__/
+backend/*/__pycache__/
+*.py[cod]
+*$py.class
+backend/db.sqlite3
+backend/.env
+backend/venv/
+backend/.venv/
+.venv/
+env/
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Artifacts
+.gemini/
