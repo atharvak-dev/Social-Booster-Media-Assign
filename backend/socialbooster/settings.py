@@ -72,7 +72,7 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL:
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        'default': dj_database_url.parse(DATABASE_URL)
     }
 elif not DEBUG:
     raise ValueError("DATABASE_URL is missing. Cannot start in production without a database.")
