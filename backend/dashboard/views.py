@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Avg, Count, Sum, Q, F
+from django.db.models import Avg, Count, Sum, Q, F, Value
 from django.db.models.functions import Coalesce
 from brands.models import Brand
 from rankings.models import SearchRanking
@@ -92,10 +92,10 @@ class DashboardOverviewView(APIView):
         """Get brand visibility scores for bar chart."""
         # Optimize: Fetch all stats in a single query using annotation
         brands = Brand.objects.annotate(
-            avg_position=Coalesce(Avg('rankings__position'), 100.0),
+            avg_position=Coalesce(Avg('rankings__position'), Value(100.0)),
             total_citations=Count('citations', distinct=True),
             mentioned_citations=Count('citations', filter=Q(citations__mentioned=True), distinct=True),
-            avg_rating=Coalesce(Avg('reviews__rating'), 0.0)
+            avg_rating=Coalesce(Avg('reviews__rating'), Value(0.0))
         )
         
         comparison = []
