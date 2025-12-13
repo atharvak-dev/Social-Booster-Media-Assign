@@ -5,7 +5,8 @@ services:
     buildCommand: |
       pip install -r backend/requirements.txt
       cd frontend && npm install && npm run build
-      cd ../backend && python manage.py collectstatic --noinput
+      cp -r frontend/dist/* backend/staticfiles/
+      cd backend && python manage.py collectstatic --noinput
     startCommand: cd backend && gunicorn socialbooster.wsgi:application
     preDeployCommand: cd backend && python manage.py migrate
     envVars:
