@@ -51,7 +51,7 @@ ROOT_URLCONF = 'socialbooster.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'staticfiles'],  # Add staticfiles for React index.html
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
