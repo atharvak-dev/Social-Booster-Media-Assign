@@ -120,6 +120,6 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 SERPAPI_KEY = os.getenv('SERPAPI_KEY', '')
