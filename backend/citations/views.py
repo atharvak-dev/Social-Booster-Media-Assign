@@ -8,8 +8,15 @@ from .serializers import AICitationSerializer
 
 
 class AICitationViewSet(viewsets.ModelViewSet):
-    """ViewSet for AICitation CRUD and analytics."""
-    queryset = AICitation.objects.all()
+    """
+    ViewSet for AICitation CRUD and analytics.
+    
+    Optimizations applied:
+    - select_related('brand') for foreign key eager loading
+    - Efficient aggregation with conditional counting
+    - Single query for breakdown statistics
+    """
+    queryset = AICitation.objects.select_related('brand').all()
     serializer_class = AICitationSerializer
     
     def get_queryset(self):
@@ -36,41 +43,61 @@ class AICitationViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def breakdown(self, request):
-        """Get citation breakdown by AI model."""
-        try:
-            queryset = self.get_queryset()
-            
-            # Use Sum(Cast) for boolean counting (SQLite compatible)
-            breakdown = queryset.order_by().values('ai_model').annotate(
-                total=Count('id'),
-                mentioned=Coalesce(Sum(Cast('mentioned', IntegerField())), 0),
-            ).annotate(
-                not_mentioned=F('total') - F('mentioned')
-            ).order_by('-mentioned')
-            
-            # Map display names
-            model_names = dict(AICitation.AI_MODEL_CHOICES)
-            for item in breakdown:
-                item['ai_model_display'] = model_names.get(item['ai_model'], item['ai_model'])
-                item['citation_rate'] = round((item['mentioned'] / item['total']) * 100, 1) if item['total'] > 0 else 0
-            
-            return Response({
-                'breakdown': list(breakdown),
-                'total_citations': queryset.count(),
-                'total_mentioned': queryset.filter(mentioned=True).count()
+        """
+        Get citation breakdown by AI model.
+        Optimized: Single query with conditional aggregation.
+        """
+        queryset = self.get_queryset()
+        
+        # Use conditional counting instead of multiple queries
+        breakdown = queryset.values('ai_model').annotate(
+            total=Count('id'),
+            mentioned=Count('id', filter=Q(mentioned=True)),
+        ).annotate(
+            not_mentioned=F('total') - F('mentioned')
+        ).order_by('-mentioned')
+        
+        # Get totals using same queryset
+        totals = queryset.aggregate(
+            total_citations=Count('id'),
+            total_mentioned=Count('id', filter=Q(mentioned=True))
+        )
+        
+        # Map display names
+        model_names = dict(AICitation.AI_MODEL_CHOICES)
+        result = []
+        for item in breakdown:
+            result.append({
+                'ai_model': item['ai_model'],
+                'ai_model_display': model_names.get(item['ai_model'], item['ai_model']),
+                'total': item['total'],
+                'mentioned': item['mentioned'],
+                'not_mentioned': item['not_mentioned'],
+                'citation_rate': round((item['mentioned'] / item['total']) * 100, 1) if item['total'] > 0 else 0
             })
-        except Exception as e:
-            import traceback
-            print(f"Error in breakdown view: {str(e)}")
-            print(traceback.format_exc())
-            return Response({'error': str(e)}, status=500)
+        
+        return Response({
+            'breakdown': result,
+            'total_citations': totals['total_citations'],
+            'total_mentioned': totals['total_mentioned']
+        })
     
     @action(detail=False, methods=['get'])
     def summary(self, request):
-        """Get citation summary statistics."""
+        """
+        Get citation summary statistics.
+        Optimized: Single query for all stats.
+        """
         queryset = self.get_queryset()
-        total = queryset.count()
-        mentioned = queryset.filter(mentioned=True).count()
+        
+        # Single aggregate query
+        stats = queryset.aggregate(
+            total=Count('id'),
+            mentioned=Count('id', filter=Q(mentioned=True))
+        )
+        
+        total = stats['total']
+        mentioned = stats['mentioned']
         
         return Response({
             'total_citations': total,
