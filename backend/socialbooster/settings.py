@@ -66,14 +66,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'socialbooster.wsgi.application'
 
-# Database - SQLite for development, Supabase PostgreSQL for production
+# Database - Supabase PostgreSQL (Required in Production)
 DATABASE_URL = os.getenv('DATABASE_URL')
+
 if DATABASE_URL:
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
+elif not DEBUG:
+    raise ValueError("DATABASE_URL is missing. Cannot start in production without a database.")
 else:
+    # Local development fallback
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
