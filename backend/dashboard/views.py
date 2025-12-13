@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Avg, Count, Sum, Q
+from django.db.models import Avg, Count, Sum, Q, F
+from django.db.models.functions import Coalesce
 from brands.models import Brand
 from rankings.models import SearchRanking
 from citations.models import AICitation
@@ -89,18 +90,24 @@ class DashboardOverviewView(APIView):
     
     def _get_brand_comparison(self):
         """Get brand visibility scores for bar chart."""
-        brands = Brand.objects.all()
-        comparison = []
+        # Optimize: Fetch all stats in a single query using annotation
+        brands = Brand.objects.annotate(
+            avg_position=Coalesce(Avg('rankings__position'), 100.0),
+            total_citations=Count('citations', distinct=True),
+            mentioned_citations=Count('citations', filter=Q(citations__mentioned=True), distinct=True),
+            avg_rating=Coalesce(Avg('reviews__rating'), 0.0)
+        )
         
+        comparison = []
         for brand in brands:
-            # Calculate visibility score (weighted combination)
-            avg_position = brand.rankings.aggregate(avg=Avg('position'))['avg'] or 100
+            # Calculations are now done in memory on annotated fields (no extra DB queries)
+            avg_position = brand.avg_position
+            
             citation_rate = 0
-            total_citations = brand.citations.count()
-            if total_citations > 0:
-                mentioned = brand.citations.filter(mentioned=True).count()
-                citation_rate = (mentioned / total_citations) * 100
-            avg_rating = brand.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+            if brand.total_citations > 0:
+                citation_rate = (brand.mentioned_citations / brand.total_citations) * 100
+                
+            avg_rating = brand.avg_rating
             
             # Visibility score: lower position is better, higher citation rate and rating is better
             position_score = max(0, 100 - avg_position)  # 0-100 scale
