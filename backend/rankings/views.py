@@ -7,14 +7,7 @@ from .serializers import SearchRankingSerializer
 
 
 class SearchRankingViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for SearchRanking CRUD and trend analysis.
-    
-    Optimizations applied:
-    - select_related('brand') for foreign key eager loading
-    - .only() to limit fetched fields
-    - Efficient aggregation with single query
-    """
+    """ViewSet for SearchRanking CRUD and trend analysis."""
     queryset = SearchRanking.objects.select_related('brand').all()
     serializer_class = SearchRankingSerializer
     
@@ -38,16 +31,8 @@ class SearchRankingViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], url_path='trends/(?P<brand_id>[^/.]+)')
     def trends(self, request, brand_id=None):
-        """
-        Get ranking trends for a specific brand.
-        Optimized: Uses .only() to minimize data transfer.
-        """
-        # Fetch only needed fields
-        rankings = SearchRanking.objects.filter(
-            brand_id=brand_id
-        ).only('keyword', 'date', 'position').order_by('date')
-        
-        # Group by keyword efficiently
+        """Get ranking trends for a specific brand."""
+        rankings = SearchRanking.objects.filter(brand_id=brand_id).order_by('date')
         trend_data = {}
         for ranking in rankings:
             keyword = ranking.keyword
@@ -57,31 +42,16 @@ class SearchRankingViewSet(viewsets.ModelViewSet):
                 'date': ranking.date.isoformat(),
                 'position': ranking.position
             })
-        
-        return Response({
-            'brand_id': brand_id,
-            'trends': trend_data
-        })
+        return Response({'brand_id': brand_id, 'trends': trend_data})
     
     @action(detail=False, methods=['get'])
     def summary(self, request):
-        """
-        Get ranking summary statistics.
-        Optimized: Single aggregate query for all stats.
-        """
+        """Get ranking summary statistics."""
         queryset = self.get_queryset()
-        
-        # Single query for all aggregations
-        stats = queryset.aggregate(
-            avg_position=Avg('position'),
-            total=len(queryset)  # Avoid extra COUNT query
-        )
-        
-        # Get unique keywords count separately (still efficient)
-        unique_keywords = queryset.values('keyword').distinct().count()
+        avg_position = queryset.aggregate(avg=Avg('position'))['avg'] or 0
         
         return Response({
             'total_rankings': queryset.count(),
-            'average_position': round(stats['avg_position'] or 0, 1),
-            'unique_keywords': unique_keywords
+            'average_position': round(avg_position, 1),
+            'unique_keywords': queryset.values('keyword').distinct().count()
         })

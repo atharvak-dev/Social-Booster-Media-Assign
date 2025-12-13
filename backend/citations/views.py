@@ -1,21 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Count, Q, Sum, IntegerField, F
-from django.db.models.functions import Cast, Coalesce
+from django.db.models import Count, Q, F
 from .models import AICitation
 from .serializers import AICitationSerializer
 
 
 class AICitationViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for AICitation CRUD and analytics.
-    
-    Optimizations applied:
-    - select_related('brand') for foreign key eager loading
-    - Efficient aggregation with conditional counting
-    - Single query for breakdown statistics
-    """
+    """ViewSet for AICitation CRUD and analytics."""
     queryset = AICitation.objects.select_related('brand').all()
     serializer_class = AICitationSerializer
     
@@ -43,13 +35,9 @@ class AICitationViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def breakdown(self, request):
-        """
-        Get citation breakdown by AI model.
-        Optimized: Single query with conditional aggregation.
-        """
+        """Get citation breakdown by AI model."""
         queryset = self.get_queryset()
         
-        # Use conditional counting instead of multiple queries
         breakdown = queryset.values('ai_model').annotate(
             total=Count('id'),
             mentioned=Count('id', filter=Q(mentioned=True)),
@@ -57,13 +45,9 @@ class AICitationViewSet(viewsets.ModelViewSet):
             not_mentioned=F('total') - F('mentioned')
         ).order_by('-mentioned')
         
-        # Get totals using same queryset
-        totals = queryset.aggregate(
-            total_citations=Count('id'),
-            total_mentioned=Count('id', filter=Q(mentioned=True))
-        )
+        total_citations = queryset.count()
+        total_mentioned = queryset.filter(mentioned=True).count()
         
-        # Map display names
         model_names = dict(AICitation.AI_MODEL_CHOICES)
         result = []
         for item in breakdown:
@@ -78,26 +62,16 @@ class AICitationViewSet(viewsets.ModelViewSet):
         
         return Response({
             'breakdown': result,
-            'total_citations': totals['total_citations'],
-            'total_mentioned': totals['total_mentioned']
+            'total_citations': total_citations,
+            'total_mentioned': total_mentioned
         })
     
     @action(detail=False, methods=['get'])
     def summary(self, request):
-        """
-        Get citation summary statistics.
-        Optimized: Single query for all stats.
-        """
+        """Get citation summary statistics."""
         queryset = self.get_queryset()
-        
-        # Single aggregate query
-        stats = queryset.aggregate(
-            total=Count('id'),
-            mentioned=Count('id', filter=Q(mentioned=True))
-        )
-        
-        total = stats['total']
-        mentioned = stats['mentioned']
+        total = queryset.count()
+        mentioned = queryset.filter(mentioned=True).count()
         
         return Response({
             'total_citations': total,
