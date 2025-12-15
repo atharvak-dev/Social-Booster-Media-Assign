@@ -117,6 +117,9 @@ DATABASE_URL=postgresql://user:password@ep-xxx.pooler.neon.tech/dbname?sslmode=r
 # SerpAPI (Required for Google Search)
 SERPAPI_KEY=your_serpapi_key_here
 
+# Gemini API (Required for AI Citations)
+GEMINI_API_KEY=your_gemini_api_key_here
+
 # Django Settings
 DEBUG=True
 SECRET_KEY=your-secret-key-here

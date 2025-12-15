@@ -123,3 +123,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 SERPAPI_KEY = os.getenv('SERPAPI_KEY', '')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')

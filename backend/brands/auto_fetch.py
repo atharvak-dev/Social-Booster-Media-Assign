@@ -112,7 +112,7 @@ def auto_fetch_rankings(brand):
 
 def auto_fetch_citations(brand):
     """
-    Create initial AI citation check entries for a brand.
+    Fetch real AI citations for a brand using Gemini API.
     
     Args:
         brand: Brand model instance
@@ -120,15 +120,60 @@ def auto_fetch_citations(brand):
     Returns:
         dict with results summary
     """
-    ai_models = ['chatgpt', 'gemini', 'perplexity']
+    from integrations.gemini_service import GeminiService
+    
+    gemini_service = GeminiService()
+    
+    # Query templates to check if the brand is mentioned
     query_templates = [
         f"What is {brand.name}?",
         f"Tell me about {brand.name}",
     ]
     
     citations_created = 0
+    mentions_found = 0
     
-    for ai_model in ai_models:
+    for query in query_templates:
+        try:
+            # Check with Gemini API
+            result = gemini_service.check_brand_citation(brand.name, query)
+            
+            mentioned = result.get('mentioned', False)
+            context = result.get('citation_context', 'Unable to check')
+            
+            if mentioned:
+                mentions_found += 1
+            
+            # Save the citation result for Gemini
+            AICitation.objects.update_or_create(
+                brand=brand,
+                ai_model='gemini',
+                query=query,
+                date=date.today(),
+                defaults={
+                    'mentioned': mentioned,
+                    'citation_context': context
+                }
+            )
+            citations_created += 1
+            
+        except Exception as e:
+            # Create a placeholder entry on error
+            AICitation.objects.update_or_create(
+                brand=brand,
+                ai_model='gemini',
+                query=query,
+                date=date.today(),
+                defaults={
+                    'mentioned': False,
+                    'citation_context': f'Error checking: {str(e)}'
+                }
+            )
+            citations_created += 1
+    
+    # Create placeholder entries for other AI models (not implemented yet)
+    other_models = ['chatgpt', 'perplexity']
+    for ai_model in other_models:
         for query in query_templates:
             AICitation.objects.get_or_create(
                 brand=brand,
@@ -136,15 +181,17 @@ def auto_fetch_citations(brand):
                 query=query,
                 date=date.today(),
                 defaults={
-                    'mentioned': False,  # Will be updated when actually checked
-                    'citation_context': 'Pending verification'
+                    'mentioned': False,
+                    'citation_context': f'Pending - {ai_model.upper()} API not configured'
                 }
             )
             citations_created += 1
     
     return {
         'citations_created': citations_created,
-        'ai_models_checked': len(ai_models)
+        'mentions_found': mentions_found,
+        'ai_models_checked': ['gemini'],
+        'pending_models': other_models
     }
 
 

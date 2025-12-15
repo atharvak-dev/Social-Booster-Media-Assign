@@ -31,6 +31,7 @@ export const citationsAPI = {
     getAll: (params) => api.get('/citations/', { params }),
     getBreakdown: () => api.get('/citations/breakdown/'),
     getSummary: () => api.get('/citations/summary/'),
+    getTimeline: (params) => api.get('/citations/timeline/', { params }),
     create: (data) => api.post('/citations/', data),
 };
 

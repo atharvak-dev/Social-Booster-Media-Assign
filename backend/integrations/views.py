@@ -118,3 +118,74 @@ class BulkSearchView(APIView):
             'total': len(queries),
             'results': results
         })
+
+
+class GeminiTestView(APIView):
+    """Test Gemini API connection."""
+    
+    def get(self, request):
+        from .gemini_service import GeminiService
+        service = GeminiService()
+        result = service.test_connection()
+        
+        if result['success']:
+            return Response(result)
+        return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GeminiCitationCheckView(APIView):
+    """Check brand citation using Gemini API."""
+    
+    def post(self, request):
+        """
+        Check if a brand is mentioned by Gemini.
+        
+        Request body:
+        {
+            "brand_id": 1,
+            "query": "What is the best accounting software?"
+        }
+        """
+        from .gemini_service import GeminiService
+        from citations.models import AICitation
+        
+        brand_id = request.data.get('brand_id')
+        query = request.data.get('query')
+        
+        if not brand_id or not query:
+            return Response(
+                {'error': 'brand_id and query are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            brand = Brand.objects.get(id=brand_id)
+        except Brand.DoesNotExist:
+            return Response(
+                {'error': f'Brand with id {brand_id} not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        service = GeminiService()
+        result = service.check_brand_citation(brand.name, query)
+        
+        if result.get('success'):
+            # Save the citation result
+            AICitation.objects.update_or_create(
+                brand=brand,
+                ai_model='gemini',
+                query=query,
+                date=date.today(),
+                defaults={
+                    'mentioned': result['mentioned'],
+                    'citation_context': result['citation_context']
+                }
+            )
+        
+        return Response({
+            'brand': brand.name,
+            'query': query,
+            'mentioned': result.get('mentioned', False),
+            'context': result.get('citation_context', ''),
+            'full_response': result.get('full_response', '')[:500]
+        })
