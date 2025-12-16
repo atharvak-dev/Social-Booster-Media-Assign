@@ -37,7 +37,7 @@ urlpatterns = [
     path('api/reviews/', include('reviews.urls')),
     path('api/dashboard/', include('dashboard.urls')),
     path('api/integrations/', include('integrations.urls')),
-    # Serve React app for all other routes
-    re_path(r'^(?!api/).*$', serve_react),
+    # Serve React app for all other routes (exclude api/, admin/, static/, assets/)
+    re_path(r'^(?!api/|admin/|static/|assets/).*$', serve_react),
 ]
 
