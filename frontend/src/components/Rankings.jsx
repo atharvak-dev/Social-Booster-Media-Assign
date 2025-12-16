@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { rankingsAPI, brandsAPI } from '../services/api';
+import GlassSurface from './effects/GlassSurface';
 
 function Rankings() {
     const [rankings, setRankings] = useState([]);

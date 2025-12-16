@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { brandsAPI } from '../services/api';
+import GlassSurface from './effects/GlassSurface';
 
 function BrandList() {
     const [brands, setBrands] = useState([]);

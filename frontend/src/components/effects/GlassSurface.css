@@ -1,0 +1,146 @@
+/* ===== Glass Surface - Premium SVG Filter Effects ===== */
+.glass-surface {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+}
+
+.glass-surface__filter {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    z-index: -1;
+}
+
+.glass-surface__content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: inherit;
+    position: relative;
+    z-index: 1;
+}
+
+/* SVG Filter Support */
+.glass-surface--svg {
+    background: hsl(0 0% 0% / var(--glass-frost, 0));
+    backdrop-filter: var(--filter-id, url(#glass-filter)) saturate(var(--glass-saturation, 1));
+    box-shadow:
+        0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+        0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+        0px 4px 16px rgba(17, 17, 26, 0.1),
+        0px 8px 24px rgba(17, 17, 26, 0.1),
+        0px 16px 56px rgba(17, 17, 26, 0.1);
+}
+
+/* Fallback for Safari/Firefox */
+.glass-surface--fallback {
+    background: rgba(16, 16, 40, 0.4);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 8px 32px 0 rgba(0, 0, 0, 0.3),
+        0 2px 16px 0 rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+        inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Pill Shape */
+.glass-surface--pill {
+    border-radius: 9999px !important;
+}
+
+.glass-surface--pill .glass-surface__content {
+    padding: 0.5rem 1.25rem;
+}
+
+/* Hover Effects */
+.glass-surface:hover {
+    box-shadow:
+        0 0 3px 1px color-mix(in oklch, white, transparent 55%) inset,
+        0 0 12px 5px color-mix(in oklch, white, transparent 80%) inset,
+        0px 6px 20px rgba(17, 17, 26, 0.15),
+        0px 12px 32px rgba(17, 17, 26, 0.15),
+        0 0 40px rgba(99, 102, 241, 0.1);
+}
+
+.glass-surface--fallback:hover {
+    background: rgba(20, 20, 50, 0.5);
+    border-color: rgba(99, 102, 241, 0.15);
+    box-shadow:
+        0 12px 48px 0 rgba(0, 0, 0, 0.35),
+        0 0 60px rgba(99, 102, 241, 0.1),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Static variant - no hover transform */
+.glass-surface.glass-static:hover {
+    transform: none;
+}
+
+/* Gradient border accent */
+.glass-surface--fallback::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(99, 102, 241, 0.3) 50%,
+            transparent 100%);
+    opacity: 0.5;
+    border-radius: inherit;
+}
+
+.glass-surface--fallback:hover::before {
+    opacity: 1;
+}
+
+/* Focus State */
+.glass-surface:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* No backdrop-filter support fallback */
+@supports not (backdrop-filter: blur(10px)) {
+    .glass-surface--fallback {
+        background: rgba(16, 16, 40, 0.85);
+    }
+
+    .glass-surface--fallback::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: inherit;
+        z-index: -1;
+    }
+}
+
+/* Subtle variant */
+.glass-surface.glass-subtle {
+    background: rgba(16, 16, 40, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Glow variant */
+.glass-surface.glass-glow:hover {
+    box-shadow:
+        0 12px 48px 0 rgba(0, 0, 0, 0.35),
+        0 0 100px rgba(99, 102, 241, 0.2),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+}

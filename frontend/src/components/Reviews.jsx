@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { reviewsAPI } from '../services/api';
+import GlassSurface from './effects/GlassSurface';
 
 function Reviews() {
     const [reviews, setReviews] = useState([]);

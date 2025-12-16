@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Pie, Bar, Line } from 'react-chartjs-2';
 import { citationsAPI } from '../services/api';
+import GlassSurface from './effects/GlassSurface';
 
 function Citations() {
     const [citations, setCitations] = useState([]);
