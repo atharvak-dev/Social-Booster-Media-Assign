@@ -33,9 +33,29 @@ export default function Login({ onLoginSuccess }) {
             }
             onLoginSuccess();
         } catch (err) {
-            const message = err.response?.data?.message ||
-                err.response?.data?.detail ||
-                'Authentication failed';
+            // Handle validation errors from backend
+            const errorData = err.response?.data;
+            let message = 'Authentication failed';
+
+            if (errorData) {
+                // Check for field-specific errors
+                if (typeof errorData === 'object') {
+                    const errorMessages = [];
+                    for (const [field, errors] of Object.entries(errorData)) {
+                        if (Array.isArray(errors)) {
+                            errorMessages.push(...errors);
+                        } else if (typeof errors === 'string') {
+                            errorMessages.push(errors);
+                        }
+                    }
+                    if (errorMessages.length > 0) {
+                        message = errorMessages.join(' ');
+                    }
+                } else if (typeof errorData === 'string') {
+                    message = errorData;
+                }
+            }
+
             setError(message);
         } finally {
             setLoading(false);
