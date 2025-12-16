@@ -83,14 +83,18 @@ body {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background: var(--gradient-primary);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  color: white;
+}
+
+.logo-icon svg {
+  stroke: white;
 }
 
 .logo-text {
@@ -132,9 +136,16 @@ body {
 }
 
 .nav-icon {
-  font-size: 20px;
-  width: 24px;
-  text-align: center;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-icon svg {
+  stroke: currentColor;
 }
 
 /* ===== Sidebar User Section ===== */
@@ -505,44 +516,47 @@ body {
   background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
 }
 
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-bottom: 16px;
-  background: rgba(99, 102, 241, 0.15);
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
 }
 
 .stat-value {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  color: var(--text-secondary);
-  font-size: 14px;
+  line-height: 1;
+  margin-bottom: 8px;
 }
 
 .stat-change {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
-  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
 }
 
 .stat-change.positive {
   color: var(--accent-success);
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .stat-change.negative {
   color: var(--accent-danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.stat-change.neutral {
+  color: var(--text-secondary);
+  background: rgba(148, 163, 184, 0.1);
 }
 
 /* ===== Charts Grid ===== */

@@ -34,7 +34,7 @@ function BrandList() {
                 const response = await brandsAPI.create(formData);
                 // Show notification about data fetching
                 if (response.data?.auto_fetch_status) {
-                    alert(`Brand "${formData.name}" created successfully!\n\n📊 Real data is being fetched from the internet in the background.\n\nPlease wait 10-15 seconds, then refresh the Dashboard to see the data.`);
+                    alert(`Brand "${formData.name}" created successfully!\n\nReal data is being fetched from the internet in the background.\n\nPlease wait 10-15 seconds, then refresh the Dashboard to see the data.`);
                 }
             }
             fetchBrands();
@@ -116,7 +116,6 @@ function BrandList() {
                                 <tr>
                                     <td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>
                                         <div className="empty-state">
-                                            <div className="empty-icon">🏢</div>
                                             <p>No brands yet. Add your first brand!</p>
                                         </div>
                                     </td>

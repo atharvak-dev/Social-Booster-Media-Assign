@@ -57,30 +57,27 @@ function Reviews() {
             {/* Summary Cards */}
             <div className="stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">⭐</div>
-                    <div className="stat-value">{summary?.average_rating || 0}</div>
                     <div className="stat-label">Average Rating</div>
+                    <div className="stat-value">{summary?.average_rating || 0}</div>
                 </div>
                 <div className="stat-card success">
-                    <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>📝</div>
-                    <div className="stat-value">{summary?.total_reviews?.toLocaleString() || 0}</div>
                     <div className="stat-label">Total Reviews</div>
+                    <div className="stat-value">{summary?.total_reviews?.toLocaleString() || 0}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>🏆</div>
-                    <div className="stat-value">{summary?.by_platform?.length || 0}</div>
                     <div className="stat-label">Platforms Tracked</div>
+                    <div className="stat-value">{summary?.by_platform?.length || 0}</div>
                 </div>
             </div>
 
             {/* Charts */}
             <div className="charts-grid">
                 <div className="chart-container">
-                    <h3 className="chart-title">⭐ Average Rating by Platform</h3>
+                    <h3 className="chart-title">Average Rating by Platform</h3>
                     <PlatformRatingChart data={summary?.by_platform || []} />
                 </div>
                 <div className="chart-container">
-                    <h3 className="chart-title">📊 Review Count by Platform</h3>
+                    <h3 className="chart-title">Review Count by Platform</h3>
                     <ReviewCountChart data={summary?.by_platform || []} />
                 </div>
             </div>
@@ -138,7 +135,7 @@ function StarRating({ rating }) {
 
 function PlatformRatingChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">⭐</div><p>No data</p></div>;
+        return <div className="empty-state"><p>No data available</p></div>;
     }
 
     const chartData = {
@@ -166,7 +163,7 @@ function PlatformRatingChart({ data }) {
 
 function ReviewCountChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📊</div><p>No data</p></div>;
+        return <div className="empty-state"><p>No data available</p></div>;
     }
 
     const chartData = {

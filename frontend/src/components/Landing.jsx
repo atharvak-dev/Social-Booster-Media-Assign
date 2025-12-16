@@ -22,25 +22,25 @@ export default function Landing() {
 
     const features = [
         {
-            icon: '🔍',
+            icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>,
             title: 'Search Rankings',
             description: 'Track your brand\'s position across Google, Bing, and other search engines with real-time data.',
             color: '#6366f1'
         },
         {
-            icon: '🤖',
+            icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 8V4H8" /><rect x="8" y="8" width="8" height="8" rx="1" /><path d="M16 16v4h4" /><path d="M4 4h4" /><path d="M20 20h-4" /></svg>,
             title: 'AI Citations',
             description: 'Monitor how AI assistants like ChatGPT, Claude, and Gemini mention your brand.',
             color: '#8b5cf6'
         },
         {
-            icon: '⭐',
+            icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>,
             title: 'Review Tracking',
             description: 'Aggregate reviews from Google, Yelp, and social platforms to understand sentiment.',
             color: '#ec4899'
         },
         {
-            icon: '📊',
+            icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3v18h18" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" /></svg>,
             title: 'Analytics Dashboard',
             description: 'Visualize all your brand metrics in one beautiful, real-time dashboard.',
             color: '#06b6d4'
@@ -48,10 +48,10 @@ export default function Landing() {
     ];
 
     const stats = [
-        { value: '99.9%', label: 'Uptime', icon: '⚡' },
-        { value: '50+', label: 'Data Sources', icon: '🔗' },
-        { value: '10K+', label: 'Brands Tracked', icon: '🏢' },
-        { value: '24/7', label: 'Monitoring', icon: '👁️' }
+        { value: '99.9%', label: 'Uptime' },
+        { value: '50+', label: 'Data Sources' },
+        { value: '10K+', label: 'Brands Tracked' },
+        { value: '24/7', label: 'Monitoring' }
     ];
 
     const testimonials = [
@@ -88,7 +88,14 @@ export default function Landing() {
             <GlassSurface className="landing-nav glass-static" pill={true} blur={16} opacity={0.4} brightness={40}>
                 <div className="nav-container">
                     <div className="nav-brand">
-                        <span className="nav-logo">📊</span>
+                        <span className="nav-logo">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M3 3v18h18" />
+                                <path d="M18 17V9" />
+                                <path d="M13 17V5" />
+                                <path d="M8 17v-3" />
+                            </svg>
+                        </span>
                         <span className="nav-name">SocialBooster</span>
                     </div>
                     <div className="nav-actions">
@@ -229,7 +236,6 @@ export default function Landing() {
                         <div className="stats-content">
                             {stats.map((stat, idx) => (
                                 <div key={idx} className="stat-item">
-                                    <span className="stat-icon">{stat.icon}</span>
                                     <span className="stat-value">{stat.value}</span>
                                     <span className="stat-label">{stat.label}</span>
                                 </div>
@@ -302,7 +308,14 @@ export default function Landing() {
                 <div className="container">
                     <div className="footer-content">
                         <div className="footer-brand">
-                            <span className="footer-logo">📊</span>
+                            <span className="footer-logo">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M3 3v18h18" />
+                                    <path d="M18 17V9" />
+                                    <path d="M13 17V5" />
+                                    <path d="M8 17v-3" />
+                                </svg>
+                            </span>
                             <span className="footer-name">SocialBooster</span>
                         </div>
                         <div className="footer-links">

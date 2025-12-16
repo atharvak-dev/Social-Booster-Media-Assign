@@ -71,7 +71,14 @@ export default function Login({ onLoginSuccess }) {
             </div>
             <div className="login-card">
                 <div className="login-header">
-                    <div className="login-logo">📊</div>
+                    <div className="login-logo">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 3v18h18" />
+                            <path d="M18 17V9" />
+                            <path d="M13 17V5" />
+                            <path d="M8 17v-3" />
+                        </svg>
+                    </div>
                     <h1>SocialBooster</h1>
                     <p>{isRegister ? 'Create your account' : 'Sign in to your account'}</p>
                 </div>

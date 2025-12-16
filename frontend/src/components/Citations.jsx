@@ -89,26 +89,23 @@ function Citations() {
             {/* Summary Cards */}
             <div className="stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">🤖</div>
-                    <div className="stat-value">{summary?.total_citations || 0}</div>
                     <div className="stat-label">Total Checks</div>
+                    <div className="stat-value">{summary?.total_citations || 0}</div>
                 </div>
                 <div className="stat-card success">
-                    <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>✅</div>
-                    <div className="stat-value">{summary?.total_mentioned || 0}</div>
                     <div className="stat-label">Times Mentioned</div>
+                    <div className="stat-value">{summary?.total_mentioned || 0}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>📈</div>
-                    <div className="stat-value">{summary?.citation_rate || 0}%</div>
                     <div className="stat-label">Citation Rate</div>
+                    <div className="stat-value">{summary?.citation_rate || 0}%</div>
                 </div>
             </div>
 
             {/* Timeline Chart - Full Width */}
             <div className="card" style={{ marginBottom: '24px' }}>
                 <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 className="chart-title" style={{ margin: 0 }}>📈 Citation Trends Over Time</h3>
+                    <h3 className="chart-title" style={{ margin: 0 }}>Citation Trends Over Time</h3>
                     <div style={{ display: 'flex', gap: '12px' }}>
                         <select
                             className="form-select"
@@ -139,11 +136,11 @@ function Citations() {
             {/* Charts */}
             <div className="charts-grid">
                 <div className="chart-container">
-                    <h3 className="chart-title">🤖 Citations by AI Model</h3>
+                    <h3 className="chart-title">Citations by AI Model</h3>
                     <CitationPieChart data={breakdown?.breakdown || []} />
                 </div>
                 <div className="chart-container">
-                    <h3 className="chart-title">📊 Citation Rate by Model</h3>
+                    <h3 className="chart-title">Citation Rate by Model</h3>
                     <CitationRateChart data={breakdown?.breakdown || []} />
                 </div>
             </div>
@@ -190,7 +187,7 @@ function Citations() {
 
 function TimelineChart({ data }) {
     if (!data || !data.datasets || data.datasets.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📈</div><p>No timeline data available</p></div>;
+        return <div className="empty-state"><p>No timeline data available</p></div>;
     }
 
     const chartData = {
@@ -246,7 +243,7 @@ function TimelineChart({ data }) {
 
 function CitationPieChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">🤖</div><p>No data</p></div>;
+        return <div className="empty-state"><p>No data available</p></div>;
     }
 
     const chartData = {
@@ -270,7 +267,7 @@ function CitationPieChart({ data }) {
 
 function CitationRateChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📊</div><p>No data</p></div>;
+        return <div className="empty-state"><p>No data available</p></div>;
     }
 
     const chartData = {

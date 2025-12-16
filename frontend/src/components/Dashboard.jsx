@@ -57,24 +57,23 @@ function Dashboard() {
         <div className="dashboard">
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Dashboard</h1>
+                    <h1 className="page-title">Analytics Overview</h1>
                     <p className="page-subtitle">Track your brand visibility across search and AI platforms</p>
                 </div>
                 <div className="date-filter">
-                    <span>📅</span>
                     <input
                         type="date"
                         value={dateRange.start}
                         onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
                     />
-                    <span>to</span>
+                    <span className="date-separator">to</span>
                     <input
                         type="date"
                         value={dateRange.end}
                         onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
                     />
                     <button className="btn btn-primary" onClick={fetchDashboardData}>
-                        Apply
+                        Apply Filter
                     </button>
                 </div>
             </div>
@@ -82,46 +81,42 @@ function Dashboard() {
             {/* Stats Cards */}
             <div className="stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">🏢</div>
-                    <div className="stat-value">{stats.total_brands || 0}</div>
                     <div className="stat-label">Brands Tracked</div>
+                    <div className="stat-value">{stats.total_brands || 0}</div>
                 </div>
                 <div className="stat-card success">
-                    <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>🔍</div>
-                    <div className="stat-value">{stats.average_search_position || 0}</div>
                     <div className="stat-label">Avg Search Position</div>
-                    <div className="stat-change positive">↑ Improving</div>
+                    <div className="stat-value">{stats.average_search_position || 0}</div>
+                    <div className="stat-change positive">Improving</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>🤖</div>
-                    <div className="stat-value">{stats.ai_citation_rate || 0}%</div>
                     <div className="stat-label">AI Citation Rate</div>
-                    <div className="stat-change positive">↑ Growing</div>
+                    <div className="stat-value">{stats.ai_citation_rate || 0}%</div>
+                    <div className="stat-change positive">Growing</div>
                 </div>
                 <div className="stat-card warning">
-                    <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>⭐</div>
-                    <div className="stat-value">{stats.average_rating || 0}</div>
                     <div className="stat-label">Avg Rating</div>
-                    <div className="stat-change positive">{stats.total_reviews || 0} reviews</div>
+                    <div className="stat-value">{stats.average_rating || 0}</div>
+                    <div className="stat-change neutral">{stats.total_reviews || 0} reviews</div>
                 </div>
             </div>
 
             {/* Charts */}
             <div className="charts-grid">
                 <div className="chart-container">
-                    <h3 className="chart-title">📈 Search Ranking Trends</h3>
+                    <h3 className="chart-title">Search Ranking Trends</h3>
                     <RankingTrendsChart data={charts.ranking_summary || []} />
                 </div>
                 <div className="chart-container">
-                    <h3 className="chart-title">🤖 AI Citation Breakdown</h3>
+                    <h3 className="chart-title">AI Citation Breakdown</h3>
                     <CitationPieChart data={charts.citation_breakdown || []} />
                 </div>
                 <div className="chart-container">
-                    <h3 className="chart-title">📊 Brand Visibility Comparison</h3>
+                    <h3 className="chart-title">Brand Visibility Comparison</h3>
                     <BrandComparisonChart data={charts.brand_comparison || []} />
                 </div>
                 <div className="chart-container">
-                    <h3 className="chart-title">⭐ Review Score Breakdown</h3>
+                    <h3 className="chart-title">Review Score Distribution</h3>
                     <ReviewScoresChart data={charts.brand_comparison || []} />
                 </div>
             </div>
@@ -132,7 +127,7 @@ function Dashboard() {
 // Ranking Trends Line Chart
 function RankingTrendsChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📈</div><p>No ranking data available</p></div>;
+        return <div className="empty-state"><p>No ranking data available</p></div>;
     }
 
     const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
@@ -178,7 +173,7 @@ function RankingTrendsChart({ data }) {
 // Citation Pie Chart
 function CitationPieChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">🤖</div><p>No citation data available</p></div>;
+        return <div className="empty-state"><p>No citation data available</p></div>;
     }
 
     const chartData = {
@@ -208,7 +203,7 @@ function CitationPieChart({ data }) {
 // Brand Comparison Bar Chart
 function BrandComparisonChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📊</div><p>No comparison data available</p></div>;
+        return <div className="empty-state"><p>No comparison data available</p></div>;
     }
 
     const chartData = {
@@ -262,7 +257,7 @@ function BrandComparisonChart({ data }) {
 // Review Scores Chart
 function ReviewScoresChart({ data }) {
     if (!data || data.length === 0) {
-        return <div className="empty-state"><div className="empty-icon">⭐</div><p>No review data available</p></div>;
+        return <div className="empty-state"><p>No review data available</p></div>;
     }
 
     const chartData = {

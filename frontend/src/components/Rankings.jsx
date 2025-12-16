@@ -82,26 +82,23 @@ function Rankings() {
             {/* Summary Cards */}
             <div className="stats-grid">
                 <div className="stat-card">
-                    <div className="stat-icon">📊</div>
-                    <div className="stat-value">{summary?.total_rankings || 0}</div>
                     <div className="stat-label">Total Rankings Tracked</div>
+                    <div className="stat-value">{summary?.total_rankings || 0}</div>
                 </div>
                 <div className="stat-card success">
-                    <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>🎯</div>
-                    <div className="stat-value">{summary?.average_position || 0}</div>
                     <div className="stat-label">Average Position</div>
+                    <div className="stat-value">{summary?.average_position || 0}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>🔑</div>
-                    <div className="stat-value">{summary?.unique_keywords || 0}</div>
                     <div className="stat-label">Keywords Tracked</div>
+                    <div className="stat-value">{summary?.unique_keywords || 0}</div>
                 </div>
             </div>
 
             {/* Trends Chart */}
             <div className="charts-grid">
                 <div className="chart-container" style={{ gridColumn: 'span 2' }}>
-                    <h3 className="chart-title">📈 Position Trends Over Time</h3>
+                    <h3 className="chart-title">Position Trends Over Time</h3>
                     {trends && <TrendsChart trends={trends.trends} />}
                 </div>
             </div>
@@ -144,7 +141,7 @@ function Rankings() {
 
 function TrendsChart({ trends }) {
     if (!trends || Object.keys(trends).length === 0) {
-        return <div className="empty-state"><div className="empty-icon">📈</div><p>No trend data available</p></div>;
+        return <div className="empty-state"><p>No trend data available</p></div>;
     }
 
     const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'];
