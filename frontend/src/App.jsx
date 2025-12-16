@@ -9,6 +9,8 @@ import Reviews from './components/Reviews';
 import Login from './components/Login';
 import Landing from './components/Landing';
 
+import RequireAuth from './components/RequireAuth';
+
 function App() {
     return (
         <Router>
@@ -43,8 +45,8 @@ function AppContent() {
         setUser(null);
     };
 
-    // Show landing page for unauthenticated users on home route
-    if (!isAuthenticated && location.pathname === '/') {
+    // Always show landing page on home route, regardless of auth
+    if (location.pathname === '/') {
         return <Landing />;
     }
 
@@ -53,22 +55,41 @@ function AppContent() {
         return <Login onLoginSuccess={handleLoginSuccess} />;
     }
 
-    // Redirect to landing for other routes when not authenticated
-    if (!isAuthenticated) {
-        return <Landing />;
-    }
-
     return (
         <div className="app-container">
-            <Sidebar user={user} onLogout={handleLogout} />
+            {isAuthenticated && <Sidebar user={user} onLogout={handleLogout} />}
             <main className="main-content">
                 <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/brands" element={<BrandList />} />
-                    <Route path="/rankings" element={<Rankings />} />
-                    <Route path="/citations" element={<Citations />} />
-                    <Route path="/reviews" element={<Reviews />} />
+                    {/* Public Routes */}
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+
+                    {/* Protected Routes */}
+                    <Route path="/dashboard" element={
+                        <RequireAuth>
+                            <Dashboard />
+                        </RequireAuth>
+                    } />
+                    <Route path="/brands" element={
+                        <RequireAuth>
+                            <BrandList />
+                        </RequireAuth>
+                    } />
+                    <Route path="/rankings" element={
+                        <RequireAuth>
+                            <Rankings />
+                        </RequireAuth>
+                    } />
+                    <Route path="/citations" element={
+                        <RequireAuth>
+                            <Citations />
+                        </RequireAuth>
+                    } />
+                    <Route path="/reviews" element={
+                        <RequireAuth>
+                            <Reviews />
+                        </RequireAuth>
+                    } />
                 </Routes>
             </main>
         </div>

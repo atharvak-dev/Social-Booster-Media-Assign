@@ -1,16 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import LightPillar from './effects/LightPillar';
-import GlassSurface from './effects/GlassSurface';
-import './Landing.css';
+import { authUtils } from '../services/api';
 
 export default function Landing() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [activeFeature, setActiveFeature] = useState(0);
+    const isAuthenticated = authUtils.isAuthenticated();
 
     const handleGetStarted = () => {
-        navigate('/login');
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/login');
+        }
+    };
+
+    const handleSignIn = () => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        } else {
+            navigate('/login');
+        }
     };
 
     useEffect(() => {
@@ -99,8 +109,14 @@ export default function Landing() {
                         <span className="nav-name">SocialBooster</span>
                     </div>
                     <div className="nav-actions">
-                        <button className="btn btn-ghost" onClick={handleGetStarted}>Sign In</button>
-                        <button className="btn btn-primary" onClick={handleGetStarted}>Get Started</button>
+                        {isAuthenticated ? (
+                            <button className="btn btn-primary" onClick={handleGetStarted}>Go to Dashboard</button>
+                        ) : (
+                            <>
+                                <button className="btn btn-ghost" onClick={handleSignIn}>Sign In</button>
+                                <button className="btn btn-primary" onClick={handleGetStarted}>Get Started</button>
+                            </>
+                        )}
                     </div>
                 </div>
             </GlassSurface>
