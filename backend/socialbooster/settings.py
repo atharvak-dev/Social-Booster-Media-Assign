@@ -97,7 +97,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/'  # Serve from root to handle /assets/ paths from Vite
+STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST Framework settings
@@ -120,9 +120,9 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# WhiteNoise settings for serving Vite-built assets
+# WhiteNoise settings - serve files from STATIC_ROOT at root URL (for Vite /assets/)
 WHITENOISE_ROOT = STATIC_ROOT
 WHITENOISE_INDEX_FILE = True
 
