@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django.db.models import Avg, Count, Sum, Q
+from django.core.cache import cache
 from brands.models import Brand
 from rankings.models import SearchRanking
 from citations.models import AICitation
@@ -8,11 +10,19 @@ from reviews.models import Review
 
 
 class DashboardOverviewView(APIView):
-    """Dashboard overview with aggregated statistics."""
+    """Dashboard overview with aggregated statistics. Cached for 5 minutes."""
+    permission_classes = [AllowAny]  # Dashboard is public
     
     def get(self, request):
         start_date = request.query_params.get('start_date') or None
         end_date = request.query_params.get('end_date') or None
+        
+        # Create cache key based on date filters
+        cache_key = f'dashboard_{start_date}_{end_date}'
+        cached_data = cache.get(cache_key)
+        
+        if cached_data:
+            return Response(cached_data)
         
         total_brands = Brand.objects.count()
         
@@ -43,7 +53,7 @@ class DashboardOverviewView(APIView):
         avg_rating = reviews_qs.aggregate(avg=Avg('rating'))['avg'] or 0
         total_reviews = reviews_qs.aggregate(total=Sum('review_count'))['total'] or 0
         
-        return Response({
+        data = {
             'overview': {
                 'total_brands': total_brands,
                 'average_search_position': round(avg_position, 1),
@@ -56,7 +66,12 @@ class DashboardOverviewView(APIView):
                 'citation_breakdown': self._get_citation_breakdown(),
                 'brand_comparison': self._get_brand_comparison(),
             }
-        })
+        }
+        
+        # Cache for 5 minutes
+        cache.set(cache_key, data, 300)
+        
+        return Response(data)
     
     def _get_ranking_chart_data(self):
         """Get ranking data for line chart."""
@@ -109,6 +124,7 @@ class DashboardOverviewView(APIView):
 
 class ExportDataView(APIView):
     """Export data as JSON."""
+    permission_classes = [AllowAny]
     
     def get(self, request):
         brand_id = request.query_params.get('brand')

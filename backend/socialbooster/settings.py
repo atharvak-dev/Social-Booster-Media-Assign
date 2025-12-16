@@ -1,8 +1,10 @@
 """
 Django settings for SocialBooster project.
+Production-grade configuration with auth, logging, caching, and rate limiting.
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,8 +26,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third party
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     # Local apps
+    'users',
     'brands',
     'rankings',
     'citations',
@@ -44,6 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Custom middleware
+    'socialbooster.middleware.logging.RequestLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'socialbooster.urls'
@@ -100,16 +106,47 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# REST Framework settings
+# =============================================================================
+# REST Framework settings with JWT Auth, Throttling, and Exception Handling
+# =============================================================================
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+    'EXCEPTION_HANDLER': 'socialbooster.exception_handlers.custom_exception_handler',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'socialbooster.throttling.BurstRateThrottle',
+        'socialbooster.throttling.AnonSustainedRateThrottle',
+        'socialbooster.throttling.SustainedRateThrottle',
     ],
+    'DEFAULT_THROTTLE_RATES': {
+        'burst': '10/second',
+        'anon_sustained': '100/hour',
+        'sustained': '1000/hour',
+    }
 }
 
-# CORS settings - allow React frontend
+# =============================================================================
+# JWT Settings - Fast token generation
+# =============================================================================
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,  # Disabled for speed
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# =============================================================================
+# CORS settings
+# =============================================================================
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -117,14 +154,68 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3001',
 ]
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_CREDENTIALS = True
 
+# =============================================================================
 # Static files (CSS, JavaScript, Images)
+# =============================================================================
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
-# WhiteNoise settings - serve files from STATIC_ROOT at root URL (for Vite /assets/)
 WHITENOISE_ROOT = STATIC_ROOT
 WHITENOISE_INDEX_FILE = True
 
+# =============================================================================
+# Caching - In-memory for simplicity (use Redis in production at scale)
+# =============================================================================
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'socialbooster-cache',
+        'TIMEOUT': 300,  # 5 minutes default
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# =============================================================================
+# Logging - Minimal overhead, structured format
+# =============================================================================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'api.requests': {
+            'handlers': ['console'],
+            'level': 'INFO' if DEBUG else 'WARNING',
+            'propagate': False,
+        },
+        'socialbooster': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# =============================================================================
+# API Keys
+# =============================================================================
 SERPAPI_KEY = os.getenv('SERPAPI_KEY', '')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
